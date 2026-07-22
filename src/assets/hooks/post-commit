@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# baseline — post-commit hook
+# Posts a comment to the linked Jira ticket after each commit.
+# Silently skips if no Jira key in branch name or no credentials set.
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+# Extract Jira ticket key from branch name (e.g. PROJ-123 from feat/PROJ-123-auth)
+TICKET=$(echo "$BRANCH" | grep -oE '[A-Z]+-[0-9]+' | head -1)
+[[ -z "$TICKET" ]] && exit 0
+
+# Require credentials
+[[ -z "$ATLASSIAN_SITE_URL" || -z "$ATLASSIAN_USER_EMAIL" || -z "$ATLASSIAN_API_TOKEN" ]] && exit 0
+
+# Collect commit info
+HASH=$(git log -1 --pretty=format:"%h")
+MSG=$(git log -1 --pretty=format:"%s")
+AUTHOR=$(git log -1 --pretty=format:"%an")
+FILES=$(git diff-tree --no-commit-id -r --name-only HEAD | head -10 | paste -sd ", " -)
+
+BODY="[baseline] Commit on \`${BRANCH}\`
+
+*${HASH}* — ${MSG}
+Author: ${AUTHOR}
+Files: ${FILES}"
+
+# Encode body as JSON using node (guaranteed available: baseline requires Node >= 18)
+PAYLOAD=$(node -e "console.log(JSON.stringify({body: process.argv[1]}))" "$BODY" 2>/dev/null)
+[[ -z "$PAYLOAD" ]] && exit 0
+
+curl -s -o /dev/null -w "%{http_code}" \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -u "${ATLASSIAN_USER_EMAIL}:${ATLASSIAN_API_TOKEN}" \
+  -d "$PAYLOAD" \
+  "${ATLASSIAN_SITE_URL}/rest/api/2/issue/${TICKET}/comment" > /dev/null 2>&1
+
+exit 0

@@ -1,0 +1,45 @@
+{
+  "name": "@engen/engen-base-ai",
+  "version": "1.0.0",
+  "description": "Team AI development toolkit — installs standards, skills and tooling for Claude Code, OpenCode, Kiro and Antigravity",
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/engen/engen-base-ai.git"
+  },
+  "bin": {
+    "baseline": "./bin/baseline.js"
+  },
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs --dts --outDir dist",
+    "dev": "tsx src/index.ts",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "src/assets",
+    "docs"
+  ],
+  "dependencies": {
+    "chalk": "4.1.2",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.4",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.0.0",
+    "tsup": "^8.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  }
+}
