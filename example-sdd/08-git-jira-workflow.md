@@ -197,17 +197,17 @@ No son skills — son git hooks globales que corren automáticamente.
 
 ---
 
-### `pre-push` — Bloquea lo que no debería llegar al remote
+### `pre-push` — Recomienda el flujo preferido sin bloquear pushes
 
-**Caso 1 — push directo a rama protegida:**
+**Caso 1 — push directo a rama protegida (permitido, con recomendación):**
 ```bash
 git push origin main
 ```
 ```
-  baseline: direct push to 'main' is not allowed.
+  baseline: recommendation: send changes to 'main' through a pull request.
 
   Protected branches: main master qa develop
-  All changes must go through a pull request.
+  Push allowed; this advisory hook never blocks pushes.
 
   Start from a Jira ticket or SDD change:
     git checkout -b feat/PROJ-123-description
@@ -216,19 +216,19 @@ git push origin main
   Then open a PR with: /branch-pr
 ```
 
-**Caso 2 — rama sin referencia a trabajo:**
+**Caso 2 — rama sin referencia a trabajo (permitida, con recomendación):**
 ```bash
 git checkout -b mi-feature-nueva
 git push -u origin mi-feature-nueva
 ```
 ```
-  baseline: branch 'mi-feature-nueva' is not linked to any work item.
+  baseline: recommendation: link branch 'mi-feature-nueva' to a work item when possible.
 
-  Every branch must reference either:
+  Recommended branch formats:
     feat/PROJ-123-description        ← Jira ticket key
     feat/sdd-<change-id>-description ← SDD change (no Jira)
 
-  Rename your branch:
+  Push allowed; rename the branch only if it helps your team's traceability:
     git branch -m feat/PROJ-123-description
 ```
 

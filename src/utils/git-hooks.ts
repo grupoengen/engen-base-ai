@@ -41,7 +41,7 @@ export async function installGlobalHooks(assetsDir: string): Promise<void> {
   try {
     execSync(`git config --global core.hooksPath "${HOOKS_DIR}"`, { stdio: 'ignore' })
     logger.success(`Global git hooks installed → ${HOOKS_DIR.replace(os.homedir(), '~')}`)
-    logger.success('Protected branches: main, master, qa, develop')
+    logger.success('Pre-push recommendations enabled for protected branches')
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     logger.warn(`Could not configure global git hooks: ${message}`)

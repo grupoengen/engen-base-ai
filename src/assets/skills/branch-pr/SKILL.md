@@ -41,7 +41,7 @@ Use this skill when:
 
 ## Branch Naming
 
-Every branch MUST reference either a Jira ticket or an SDD change id. Branches without either are blocked by the `pre-push` hook.
+Branches SHOULD reference either a Jira ticket or an SDD change id when possible. The `pre-push` hook recommends this for traceability but never blocks branches without either.
 
 **With Jira ticket:** `type/PROJ-123-short-description`
 **Without Jira (SDD only):** `type/sdd-<change-id>-short-description`
@@ -52,9 +52,9 @@ Every branch MUST reference either a Jira ticket or an SDD change id. Branches w
 | Bug fix | `fix/PROJ-456-null-pointer` | `fix/sdd-20240719-null-pointer` |
 | Refactor | `refactor/PROJ-321-auth-layer` | `refactor/sdd-20240720-auth-layer` |
 
-When there is no Jira ticket, run `/sdd-new <description>` first to generate the change id.
+For traceability, when there is no Jira ticket, consider running `/sdd-new <description>` first to generate the change id.
 
-> Never push directly to `main`, `master`, `qa`, or `develop`.
+> Prefer pull requests instead of pushing directly to `main`, `master`, `qa`, or `develop`.
 > After every commit, the `post-commit` hook silently posts a comment to the linked Jira ticket (if credentials are configured).
 
 ---

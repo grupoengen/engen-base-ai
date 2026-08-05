@@ -58,7 +58,7 @@ export async function doctor(): Promise<void> {
 
     // Git hooks
     checks.push({
-      name: 'Git hooks installed (pre-push blocks protected branches)',
+      name: 'Git hooks installed (pre-push recommends pull requests)',
       pass: areHooksInstalled(),
       fix: 'Run: baseline install',
     })
