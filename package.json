@@ -1,13 +1,13 @@
 {
   "name": "@grupoengen/engen-base-ai",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Team AI development toolkit — installs standards, skills and tooling for Claude Code, OpenCode, Kiro and Antigravity",
   "repository": {
     "type": "git",
-    "url": "https://github.com/grupoengen/engen-base-ai.git"
+    "url": "git+https://github.com/grupoengen/engen-base-ai.git"
   },
   "bin": {
-    "baseline": "./bin/baseline.js"
+    "baseline": "bin/baseline.js"
   },
   "main": "./dist/index.js",
   "scripts": {

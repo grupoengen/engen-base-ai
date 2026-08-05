@@ -29,7 +29,7 @@ On Windows, `baseline install` works from CMD, PowerShell, Git Bash, WSL, or mac
 | Team standards block | `~/.claude/CLAUDE.md` · `~/.opencode/AGENTS.md` · `~/.kiro/steering/baseline.md` |
 | [Gentle-AI](https://github.com/Gentleman-Programming/gentle-ai) ecosystem | global |
 | [Engram](https://github.com/Gentleman-Programming/engram) MCP wiring (if installed) | per AI tool via `engram setup` |
-| Git hooks (pre-push blocks main, master, qa, develop) | `~/.baseline/hooks/` via `core.hooksPath` |
+| Git hooks (pre-push recommends PRs and traceable branches) | `~/.baseline/hooks/` via `core.hooksPath` |
 | OpenSpec structure for spec-driven development | `./openspec/` in the project |
 
 ---
@@ -191,9 +191,9 @@ baseline mcp jira          # auto-detects your tools and configures all of them
 
 ### Git workflow (branches, PRs, Jira linking)
 
-Every branch must reference a Jira ticket (`feat/PROJ-123-description`) or an SDD change (`feat/sdd-<id>-description`). `baseline install` enforces this with two global git hooks:
+Branches are recommended to reference a Jira ticket (`feat/PROJ-123-description`) or an SDD change (`feat/sdd-<id>-description`). `baseline install` installs two global git hooks:
 
-- **`pre-push`** — blocks direct pushes to `main`, `master`, `qa`, `develop` and rejects branches without a work item reference
+- **`pre-push`** — recommends pull requests for `main`, `master`, `qa`, and `develop`, and recommends a work item reference; it never blocks a push
 - **`post-commit`** — automatically posts a comment to the linked Jira ticket after every commit
 
 Re-run `baseline install` after updating baseline to refresh the installed global hooks.

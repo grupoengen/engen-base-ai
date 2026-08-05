@@ -1,26 +1,26 @@
 # Git Workflow — Step-by-step guide
 
-All changes go through a pull request. No one pushes directly to `main`, `master`,
-`qa`, or `develop`. Every branch must be linked to either a **Jira ticket** or an
-**SDD change** — never neither.
+All changes should preferably go through a pull request. Direct pushes to `main`,
+`master`, `qa`, or `develop` are allowed by the local hook, and branch names may be
+used without a **Jira ticket** or an **SDD change**.
 
-Two hooks installed by `baseline install` enforce this:
+Two hooks installed by `baseline install` support this workflow:
 
 | Hook | What it does |
 |------|-------------|
-| `pre-push` | Blocks pushes to protected branches and rejects branches without a Jira key or SDD id |
+| `pre-push` | Recommends pull requests for protected branches and traceable branch names; never blocks pushes |
 | `post-commit` | After every commit, posts a comment to the linked Jira ticket (silent if no ticket or credentials) |
 
 ---
 
 ## Protected branches
 
-| Branch | Rule |
+| Branch | Recommended practice |
 |--------|------|
-| `main` | Production — only PRs after full review |
+| `main` | Production — preferably use a PR after full review |
 | `master` | Same as `main` |
-| `qa` | Staging — only PRs from feature branches that passed CI |
-| `develop` | Integration — only PRs from feature branches |
+| `qa` | Staging — preferably use PRs from feature branches that passed CI |
+| `develop` | Integration — preferably use PRs from feature branches |
 
 ---
 
@@ -43,7 +43,7 @@ Two hooks installed by `baseline install` enforce this:
                    Luego usa el change-id generado.
 ```
 
-**El `pre-push` hook bloquea cualquier rama que no cumpla con uno de los dos formatos.**
+**El hook `pre-push` recomienda estos formatos, pero no bloquea ramas que no los cumplan.**
 
 ---
 
@@ -168,7 +168,7 @@ El skill valida y abre el PR con:
 - Título: `feat(pagos): add webhook receiver endpoint [PROJ-123]` o `feat(pagos): add webhook receiver endpoint [sdd-20240718]`
 - Link al ticket Jira o al SDD change
 - Summary y test plan
-- Sin push directo — siempre como PR
+- El flujo recomendado es mediante PR; el push directo sigue estando permitido
 
 ---
 
