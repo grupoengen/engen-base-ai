@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Git hooks now use portable POSIX `sh` syntax, preventing Windows WSL `execvpe(/bin/bash)` push failures.
 - Executable detection and Gentle-AI installation no longer depend on Unix-only shell commands.
 - Windows installation now reports actionable prerequisites when Bash or WSL is unavailable.
+- `baseline update` now updates the current `@grupoengen/engen-base-ai` package.
 
 ## [1.0.0] - 2026-07-22
 

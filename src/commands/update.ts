@@ -8,7 +8,7 @@ export async function update(): Promise<void> {
 
   try {
     logger.info('Updating package...')
-    execSync('npm update -g @baseline-ia/baseline-cli', { stdio: 'inherit' })
+    execSync('npm update -g @grupoengen/engen-base-ai', { stdio: 'inherit' })
     logger.success('Package updated')
   } catch {
     logger.error('npm update failed — check your registry auth')
