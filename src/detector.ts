@@ -1,7 +1,7 @@
-import { execSync } from 'child_process'
 import fs from 'fs-extra'
 import path from 'path'
 import os from 'os'
+import { findExecutable } from './utils/executable'
 
 export type AITool = 'claude-code' | 'opencode' | 'antigravity' | 'kiro-ide' | 'kiro-cli' | 'codex'
 
@@ -16,12 +16,7 @@ export interface DetectedTools {
 }
 
 function binaryExists(command: string): boolean {
-  try {
-    execSync(`command -v ${command}`, { stdio: 'ignore' })
-    return true
-  } catch {
-    return false
-  }
+  return findExecutable(command) !== null
 }
 
 function dirExists(dirPath: string): boolean {

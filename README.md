@@ -17,6 +17,8 @@ baseline install
 
 That's it. Your machine now has the same setup as every other team member.
 
+On Windows, `baseline install` works from CMD, PowerShell, Git Bash, WSL, or macOS/Linux terminals. If Gentle-AI is not already installed, Windows requires Git Bash or WSL because the official Gentle-AI installer is a Bash script; PowerShell alone is not sufficient.
+
 ---
 
 ## What it installs
@@ -193,6 +195,8 @@ Every branch must reference a Jira ticket (`feat/PROJ-123-description`) or an SD
 
 - **`pre-push`** — blocks direct pushes to `main`, `master`, `qa`, `develop` and rejects branches without a work item reference
 - **`post-commit`** — automatically posts a comment to the linked Jira ticket after every commit
+
+Re-run `baseline install` after updating baseline to refresh the installed global hooks.
 
 **Guides:**
 → [`docs/guides/git-workflow.md`](docs/guides/git-workflow.md) — full step-by-step with both paths

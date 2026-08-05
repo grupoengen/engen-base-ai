@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # baseline — post-commit hook
 # Posts a comment to the linked Jira ticket after each commit.
 # Silently skips if no Jira key in branch name or no credentials set.
@@ -7,10 +7,14 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 
 # Extract Jira ticket key from branch name (e.g. PROJ-123 from feat/PROJ-123-auth)
 TICKET=$(echo "$BRANCH" | grep -oE '[A-Z]+-[0-9]+' | head -1)
-[[ -z "$TICKET" ]] && exit 0
+if [ -z "$TICKET" ]; then
+  exit 0
+fi
 
 # Require credentials
-[[ -z "$ATLASSIAN_SITE_URL" || -z "$ATLASSIAN_USER_EMAIL" || -z "$ATLASSIAN_API_TOKEN" ]] && exit 0
+if [ -z "$ATLASSIAN_SITE_URL" ] || [ -z "$ATLASSIAN_USER_EMAIL" ] || [ -z "$ATLASSIAN_API_TOKEN" ]; then
+  exit 0
+fi
 
 # Collect commit info
 HASH=$(git log -1 --pretty=format:"%h")
@@ -26,7 +30,9 @@ Files: ${FILES}"
 
 # Encode body as JSON using node (guaranteed available: baseline requires Node >= 18)
 PAYLOAD=$(node -e "console.log(JSON.stringify({body: process.argv[1]}))" "$BODY" 2>/dev/null)
-[[ -z "$PAYLOAD" ]] && exit 0
+if [ -z "$PAYLOAD" ]; then
+  exit 0
+fi
 
 curl -s -o /dev/null -w "%{http_code}" \
   -X POST \

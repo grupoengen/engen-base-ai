@@ -1,7 +1,6 @@
 import fs from 'fs-extra'
 import path from 'path'
 import os from 'os'
-import { execSync } from 'child_process'
 import chalk from 'chalk'
 import { detectTools } from '../detector'
 import { getState as getOpenSpecState } from '../utils/openspec'
@@ -9,6 +8,7 @@ import { logger } from '../utils/logger'
 import { hasClaudeTeamBlock } from '../utils/checks'
 import { isInstalled as isEngramInstalled, getVersion as getEngramVersion, detectMode as detectEngramMode, isWiredForTool } from '../utils/engram'
 import { isInstalled as areHooksInstalled } from '../utils/git-hooks'
+import { isInstalled as isGentleAiInstalled } from '../utils/gentle-ai'
 
 const CLAUDE_DIR = path.join(os.homedir(), '.claude')
 
@@ -64,11 +64,7 @@ export async function doctor(): Promise<void> {
     })
 
     // Gentle-AI
-    let gentleAiInstalled = false
-    try {
-      execSync('gentle-ai --version', { stdio: 'ignore' })
-      gentleAiInstalled = true
-    } catch { /* not installed */ }
+    const gentleAiInstalled = isGentleAiInstalled()
     checks.push({
       name: 'Gentle-AI installed',
       pass: gentleAiInstalled,

@@ -1,8 +1,9 @@
-import { execSync } from 'child_process'
+import { execFileSync } from 'child_process'
 import fs from 'fs-extra'
 import path from 'path'
 import os from 'os'
 import { logger } from './logger'
+import { findExecutable, isWindows } from './executable'
 import type { AITool } from '../detector'
 
 // Agent IDs that engram setup recognizes
@@ -23,8 +24,11 @@ const SETTINGS_FILES: Partial<Record<AITool, string>> = {
 export type EngramMode = 'local' | 'cloud' | 'both' | 'none'
 
 export function isInstalled(): boolean {
+  const executable = findExecutable('engram')
+  if (!executable) return false
+
   try {
-    execSync('engram --version', { stdio: 'ignore' })
+    execFileSync(executable, ['--version'], { stdio: 'ignore', shell: isWindows() })
     return true
   } catch {
     return false
@@ -32,8 +36,11 @@ export function isInstalled(): boolean {
 }
 
 export function getVersion(): string {
+  const executable = findExecutable('engram')
+  if (!executable) return 'unknown'
+
   try {
-    return execSync('engram --version', { encoding: 'utf-8' }).trim()
+    return execFileSync(executable, ['--version'], { encoding: 'utf-8', shell: isWindows() }).trim()
   } catch {
     return 'unknown'
   }
@@ -76,7 +83,9 @@ export async function setup(tools: AITool[]): Promise<void> {
     seen.add(agentId)
 
     try {
-      execSync(`engram setup ${agentId}`, { stdio: 'pipe' })
+      const executable = findExecutable('engram')
+      if (!executable) throw new Error('engram executable was not found on PATH')
+      execFileSync(executable, ['setup', agentId], { stdio: 'pipe', shell: isWindows() })
       logger.success(`engram setup ${agentId}`)
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
