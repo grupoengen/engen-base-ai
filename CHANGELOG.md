@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-08-05
+
+### Fixed
+- Git hooks now use portable POSIX `sh` syntax, preventing Windows WSL `execvpe(/bin/bash)` push failures.
+- Executable detection and Gentle-AI installation no longer depend on Unix-only shell commands.
+- Windows installation now reports actionable prerequisites when Bash or WSL is unavailable.
+
 ## [1.0.0] - 2026-07-22
 
 ### Added

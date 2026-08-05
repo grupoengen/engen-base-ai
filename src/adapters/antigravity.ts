@@ -1,12 +1,10 @@
-import { execSync } from 'child_process'
 import { logger } from '../utils/logger'
+import { findExecutable } from '../utils/executable'
 
 export async function apply(_assetsDir: string): Promise<void> {
   logger.title('Antigravity')
 
-  try {
-    execSync('command -v antigravity', { stdio: 'ignore' })
-  } catch {
+  if (!findExecutable('antigravity')) {
     logger.warn('Antigravity not installed — skipping')
     return
   }

@@ -1,18 +1,18 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # baseline — pre-push hook
 # 1. Blocks direct pushes to protected branches.
 # 2. Validates that the branch is linked to a Jira ticket OR an SDD change.
 
-PROTECTED=("main" "master" "qa" "develop")
+PROTECTED="main master qa develop"
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 
 # --- 1. Block protected branches ---
-for b in "${PROTECTED[@]}"; do
-  if [[ "$BRANCH" == "$b" ]]; then
+for b in $PROTECTED; do
+  if [ "$BRANCH" = "$b" ]; then
     echo ""
     echo "  baseline: direct push to '$BRANCH' is not allowed."
     echo ""
-    echo "  Protected branches: ${PROTECTED[*]}"
+    echo "  Protected branches: $PROTECTED"
     echo "  All changes must go through a pull request."
     echo ""
     echo "  Start from a Jira ticket or SDD change:"
@@ -26,10 +26,19 @@ for b in "${PROTECTED[@]}"; do
 done
 
 # --- 2. Require Jira key or SDD id in branch name ---
-HAS_JIRA=$(echo "$BRANCH" | grep -qE '[A-Z]+-[0-9]+' && echo "yes" || echo "no")
-HAS_SDD=$(echo "$BRANCH"  | grep -qiE 'sdd-[a-z0-9-]+' && echo "yes" || echo "no")
+if echo "$BRANCH" | grep -qE '[A-Z]+-[0-9]+'; then
+  HAS_JIRA="yes"
+else
+  HAS_JIRA="no"
+fi
 
-if [[ "$HAS_JIRA" == "no" && "$HAS_SDD" == "no" ]]; then
+if echo "$BRANCH" | grep -qiE 'sdd-[a-z0-9-]+'; then
+  HAS_SDD="yes"
+else
+  HAS_SDD="no"
+fi
+
+if [ "$HAS_JIRA" = "no" ] && [ "$HAS_SDD" = "no" ]; then
   echo ""
   echo "  baseline: branch '$BRANCH' is not linked to any work item."
   echo ""
