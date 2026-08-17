@@ -40,11 +40,8 @@ On Windows, `baseline install` works from CMD, PowerShell, Git Bash, WSL, or mac
 
 ```bash
 baseline install                  # auto-detect tools and configure all
-baseline install claude           # configure only Claude Code
-baseline install opencode         # configure only OpenCode
 baseline install kiro-ide         # configure only Kiro IDE (~/.kiro detected)
 baseline install kiro-cli         # configure only Kiro CLI (kiro binary detected)
-baseline install codex            # configure only Codex
 baseline update                   # pull latest baseline and re-apply standards
 baseline status                   # show what's installed and configured
 baseline doctor                   # diagnose missing or broken setup — includes Engram check
@@ -81,14 +78,10 @@ Skills are installed for every step. Start any change with:
 
 | Tool | Skills | Team config | Gentle-AI preset |
 |------|--------|-------------|-----------------|
-| [Claude Code](https://claude.ai/code) | ✅ | ✅ `~/.claude/CLAUDE.md` (strict TDD) | `full-gentleman` + SDD multi |
-| [OpenCode](https://opencode.ai) | ✅ | ✅ `~/.opencode/AGENTS.md` (strict TDD) | `full-gentleman` + SDD multi |
 | [Kiro IDE](https://kiro.dev) (`~/.kiro` detected) | ✅ | ✅ `~/.kiro/steering/baseline.md` (strict TDD) + statusline sub-agent | `performance` + SDD multi |
 | [Kiro CLI](https://kiro.dev) (`kiro` binary detected) | ✅ | ✅ same as Kiro IDE (strict TDD) | `performance` + SDD multi |
-| Codex | — | via gentle-ai | `recommended` |
-| Antigravity | — | coming soon | — |
 
-Detection is automatic — `baseline install` reads your environment and configures only the tools that are present. All tools use `--persona neutral`.
+Detection is automatic — `baseline install` reads your environment and configures only the tools that are present.
 
 ---
 
