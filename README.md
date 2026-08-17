@@ -2,16 +2,16 @@
 
 > One command to give your entire team the same AI tools, skills, and working rules — so anyone can pick up where someone else left off.
 
-[![npm](https://img.shields.io/npm/v/@baseline-ia/baseline-cli)](https://www.npmjs.com/package/@baseline-ia/baseline-cli)
-[![node](https://img.shields.io/node/v/@baseline-ia/baseline-cli)](https://nodejs.org)
-[![license](https://img.shields.io/npm/l/@baseline-ia/baseline-cli)](./LICENSE)
+[![npm](https://img.shields.io/npm/v/@grupoengen/engen-base-ai)](https://www.npmjs.com/package/@grupoengen/engen-base-ai)
+[![node](https://img.shields.io/node/v/@grupoengen/engen-base-ai)](https://nodejs.org)
+[![license](https://img.shields.io/npm/l/@grupoengen/engen-base-ai)](./LICENSE)
 
 ---
 
 ## Quick start
 
 ```bash
-npm install -g @baseline-ia/baseline-cli
+npm install -g @grupoengen/engen-base-ai
 baseline install
 ```
 
@@ -31,6 +31,8 @@ On Windows, `baseline install` works from CMD, PowerShell, Git Bash, WSL, or mac
 | [Engram](https://github.com/Gentleman-Programming/engram) MCP wiring (if installed) | per AI tool via `engram setup` |
 | Git hooks (pre-push recommends PRs and traceable branches) | `~/.baseline/hooks/` via `core.hooksPath` |
 | OpenSpec structure for spec-driven development | `./openspec/` in the project |
+| Corporate skills from baseline-cloud (when configured) | `~/.kiro/steering/bl-*.md` — synced automatically |
+| Background watcher for Kiro credit tracking | launchd (macOS) / cron (Linux) — installed automatically |
 
 ---
 
@@ -48,6 +50,13 @@ baseline status                   # show what's installed and configured
 baseline doctor                   # diagnose missing or broken setup — includes Engram check
 baseline onboard junior           # onboarding guide by level: junior · semi · senior
 baseline mcp jira                 # configure Atlassian MCP (Jira) for all detected tools
+
+# baseline-cloud — connect to your team's self-hosted baseline-cloud server
+baseline cloud login              # authenticate (one-time setup)
+baseline cloud status             # show connection status and configured server
+baseline cloud sync               # download latest corporate skills to ~/.kiro/steering/
+baseline cloud logout             # remove saved credentials
+baseline cloud kiro-scan          # manually report Kiro session credit usage
 ```
 
 ---
@@ -201,6 +210,36 @@ Re-run `baseline install` after updating baseline to refresh the installed globa
 **Guides:**
 → [`docs/guides/git-workflow.md`](docs/guides/git-workflow.md) — full step-by-step with both paths
 → [`example-sdd/08-git-jira-workflow.md`](example-sdd/08-git-jira-workflow.md) — concrete examples (not limits)
+
+### baseline-cloud (corporate skills and Kiro credit tracking)
+
+baseline-cloud is built into the CLI — no separate install needed. If your team runs a self-hosted baseline-cloud server, connect once and everything syncs automatically.
+
+**One-time setup:**
+
+```bash
+baseline cloud login --server https://your-baseline-cloud.com --token <your-token>
+baseline cloud status             # confirm connection
+baseline cloud sync               # pull corporate skills immediately
+```
+
+**What happens automatically after login:**
+
+- `baseline install` syncs corporate skills from baseline-cloud to `~/.kiro/steering/bl-*.md`
+- Kiro IDE runs `baseline cloud sync` at the start of every session (via steering file)
+- A background watcher (launchd on macOS, cron on Linux) scans `~/.kiro/sessions/` every 5 minutes and reports credit usage to baseline-cloud
+
+**All baseline-cloud commands:**
+
+| Command | Description |
+|---------|-------------|
+| `baseline cloud login --server <url> --token <token>` | Authenticate with your baseline-cloud server. Credentials saved to `~/.baseline/cloud.json`. |
+| `baseline cloud status` | Show configured server URL and token prefix. |
+| `baseline cloud sync` | Download all corporate skills to `~/.kiro/steering/bl-*.md`. Removes stale skills automatically. |
+| `baseline cloud logout` | Remove saved credentials. |
+| `baseline cloud kiro-scan` | Manually scan `~/.kiro/sessions/` and report credit usage to baseline-cloud. |
+
+**Full guide:** → [`docs/guides/baseline-cloud.md`](docs/guides/baseline-cloud.md)
 
 ---
 
