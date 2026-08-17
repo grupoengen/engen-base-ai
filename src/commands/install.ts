@@ -10,6 +10,7 @@ import { isInstalled as isGentleAiInstalled, installCli as installGentleAi, runI
 import { setup as setupEngram } from '../utils/engram'
 import { installGlobalHooks } from '../utils/git-hooks'
 import { logger } from '../utils/logger'
+import { enrollProject } from '../baseline-cloud/enrollment'
 import type { AITool } from '../detector'
 
 const ASSETS_DIR = path.join(__dirname, '..', 'src', 'assets')
@@ -80,6 +81,9 @@ export async function install(tool?: string): Promise<void> {
 
   await safeApply('Engram', () => setupEngram(agentsForGentleAi))
   await safeApply('Git hooks', () => installGlobalHooks(ASSETS_DIR))
+
+  // Enroll project in baseline-cloud if configured (silent if not)
+  await enrollProject()
 
   console.log(chalk.bold.green('\n  ✓ Team standards installed successfully\n'))
 }

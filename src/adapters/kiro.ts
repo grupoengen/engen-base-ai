@@ -2,6 +2,8 @@ import fs from 'fs-extra'
 import path from 'path'
 import os from 'os'
 import { logger } from '../utils/logger'
+import { syncSkills } from '../baseline-cloud/skills-sync'
+import { installKiroWatcher } from '../baseline-cloud/watcher'
 
 const KIRO_DIR = path.join(os.homedir(), '.kiro')
 const SKILLS_DIR = path.join(KIRO_DIR, 'skills')
@@ -32,6 +34,17 @@ export async function apply(assetsDir: string): Promise<void> {
   await applySkills(assetsDir)
   await applySteering(assetsDir)
   await applySubAgents()
+  await syncCorporateSkills()
+  installKiroWatcher()
+}
+
+async function syncCorporateSkills(): Promise<void> {
+  const result = await syncSkills()
+  if (result.error) {
+    logger.dim(`baseline-cloud: ${result.error}`)
+  } else if (result.written > 0) {
+    logger.success(`${result.written} corporate skill(s) synced from baseline-cloud`)
+  }
 }
 
 async function applySkills(assetsDir: string): Promise<void> {
