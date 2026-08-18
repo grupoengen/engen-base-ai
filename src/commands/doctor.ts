@@ -16,6 +16,7 @@ interface Check {
   name: string
   pass: boolean
   fix?: string
+  note?: string
 }
 
 export async function doctor(): Promise<void> {
@@ -57,11 +58,23 @@ export async function doctor(): Promise<void> {
     })
 
     // Git hooks
+    const hooksInstalled = areHooksInstalled()
     checks.push({
       name: 'Git hooks installed (pre-push recommends pull requests)',
-      pass: areHooksInstalled(),
+      pass: hooksInstalled,
       fix: 'Run: baseline install',
+      note: process.platform === 'win32' && hooksInstalled
+        ? 'Git hooks require Git for Windows (Git Bash) to execute'
+        : undefined,
     })
+
+    // Kiro watcher on Windows
+    if (process.platform === 'win32') {
+      checks.push({
+        name: 'Kiro background watcher: not supported on Windows — use \'baseline cloud kiro-scan\' manually',
+        pass: true,
+      })
+    }
 
     // Gentle-AI
     const gentleAiInstalled = isGentleAiInstalled()
@@ -77,6 +90,7 @@ export async function doctor(): Promise<void> {
   for (const check of checks) {
     if (check.pass) {
       logger.success(check.name)
+      if (check.note) logger.warn(check.note)
     } else {
       logger.error(check.name)
       if (check.fix) logger.dim(`Fix: ${check.fix}`)

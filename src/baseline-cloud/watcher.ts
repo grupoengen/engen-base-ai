@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'node:fs'
-import { homedir, platform } from 'node:os'
+import { homedir, platform, tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -36,9 +36,9 @@ function buildPlist(binaryPath: string): string {
   <key>RunAtLoad</key>
   <true/>
   <key>StandardOutPath</key>
-  <string>/tmp/${BIN_NAME}-kiro.log</string>
+  <string>${tmpdir()}/${BIN_NAME}-kiro.log</string>
   <key>StandardErrorPath</key>
-  <string>/tmp/${BIN_NAME}-kiro-error.log</string>
+  <string>${tmpdir()}/${BIN_NAME}-kiro-error.log</string>
 </dict>
 </plist>
 `
@@ -71,7 +71,7 @@ function writeCrontab(content: string): boolean {
 function installCron(binaryPath: string): boolean {
   const current = readCrontab()
   if (current.includes(CRON_MARKER)) return true
-  const entry = `${CRON_MARKER}\n*/5 * * * * ${binaryPath} cloud kiro-scan >> /tmp/${BIN_NAME}-kiro.log 2>&1\n`
+  const entry = `${CRON_MARKER}\n*/5 * * * * ${binaryPath} cloud kiro-scan >> ${tmpdir()}/${BIN_NAME}-kiro.log 2>&1\n`
   return writeCrontab((current.trimEnd() ? current.trimEnd() + '\n' : '') + entry)
 }
 
@@ -92,6 +92,7 @@ export function installKiroWatcher(): boolean {
   const os = platform()
   if (os === 'darwin') return installMacos(binary)
   if (os === 'linux') return installCron(binary)
+  console.log(`  · Kiro background watcher not supported on Windows — run 'baseline cloud kiro-scan' manually to report credit usage`)
   return false
 }
 

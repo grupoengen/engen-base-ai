@@ -40,7 +40,10 @@ export async function apply(assetsDir: string): Promise<void> {
   await applySubAgents()
   await applyPermissions()
   await syncCorporateSkills()
-  installKiroWatcher()
+  const watcherInstalled = installKiroWatcher()
+  if (watcherInstalled) {
+    logger.success('Background Kiro session watcher installed')
+  }
 }
 
 async function syncCorporateSkills(): Promise<void> {
