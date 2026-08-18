@@ -70,7 +70,7 @@ refactor/auth-hook
 1. Create an issue first (`/issue-creation`)
 2. Branch off `main`
 3. Work in small, focused commits
-4. Open PR with `/branch-pr`
+4. Open a PR using `gh pr create` or your Git host's interface
 5. Request review
 
 ### Week 2 goal
@@ -104,7 +104,6 @@ Skills are slash commands that load specialized instructions. Your most importan
 | `/sdd-status` | Checking where you are in a task |
 | `/sdd-apply` | When you're ready to write code |
 | `/judgment-day` | Before opening a PR |
-| `/branch-pr` | Opening a PR |
 | `/interface-design` | Building UI components |
 
 ### Engram — AI memory

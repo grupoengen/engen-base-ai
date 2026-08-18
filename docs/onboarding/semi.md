@@ -56,7 +56,7 @@ Pick a small real task from the backlog. Run `/sdd-new` on it. Go through at lea
 Take yesterday's SDD and finish it:
 - Complete all phases through apply
 - Run `/judgment-day` before opening PR
-- Open PR with `/branch-pr`
+- Open a PR using `gh pr create` or your Git host's interface
 
 ### Git standards (non-negotiable)
 ```
@@ -73,7 +73,6 @@ No free-form messages. If you're not sure which prefix, use `chore:`.
 |---|---|
 | `/sdd-new` | Every task |
 | `/judgment-day` | Before every PR |
-| `/branch-pr` | Opening PRs |
 | `/chained-pr` | When your diff is 400+ lines |
 | `/interface-design` | UI components |
 | `/frontend-design` | Frontend architecture |

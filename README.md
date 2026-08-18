@@ -164,37 +164,14 @@ Click the skill name to see a concrete usage example. Each example shows real pr
 
 ## Integrations
 
-### Jira (via Atlassian MCP)
+### Git workflow
 
-Connect your AI tools to Jira so the `/jira-workflow` skill can create and update tickets directly.
-Supported tools: **Claude Code**, **Kiro IDE**, **Kiro CLI**.
+`baseline install` installs a global `pre-push` git hook. It is advisory-only and never blocks a push.
 
-**Quick setup:**
+Re-run `baseline install` after updating baseline to refresh the hook.
 
-```bash
-export ATLASSIAN_SITE_URL=https://your-org.atlassian.net
-export ATLASSIAN_USER_EMAIL=your@email.com
-export ATLASSIAN_API_TOKEN=your-api-token
-baseline mcp jira          # auto-detects your tools and configures all of them
-# restart your AI tool, then:
-/jira-workflow crea los tickets para la migración del módulo de pagos
-```
-
-**Full step-by-step guide (token generation, per-tool config, troubleshooting, Jira project setup):**
-→ [`docs/guides/jira-integration.md`](docs/guides/jira-integration.md)
-
-### Git workflow (branches, PRs, Jira linking)
-
-Branches are recommended to reference a Jira ticket (`feat/PROJ-123-description`) or an SDD change (`feat/sdd-<id>-description`). `baseline install` installs two global git hooks:
-
-- **`pre-push`** — recommends pull requests for `main`, `master`, `qa`, and `develop`, and recommends a work item reference; it never blocks a push
-- **`post-commit`** — automatically posts a comment to the linked Jira ticket after every commit
-
-Re-run `baseline install` after updating baseline to refresh the installed global hooks.
-
-**Guides:**
-→ [`docs/guides/git-workflow.md`](docs/guides/git-workflow.md) — full step-by-step with both paths
-→ [`example-sdd/08-git-jira-workflow.md`](example-sdd/08-git-jira-workflow.md) — concrete examples (not limits)
+**Guide:**
+→ [`docs/guides/git-workflow.md`](docs/guides/git-workflow.md)
 
 ### baseline-cloud (corporate skills and Kiro credit tracking)
 
