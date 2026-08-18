@@ -103,7 +103,12 @@ export async function doctor(): Promise<void> {
   const engramInstalled = isEngramInstalled()
   if (!engramInstalled) {
     logger.warn('Engram not installed')
-    logger.dim('Fix: brew install gentleman-programming/tap/engram')
+    if (process.platform === 'win32') {
+      logger.dim('Fix: download from https://github.com/Gentleman-Programming/engram/releases')
+      logger.dim('     or use WSL: brew install gentleman-programming/tap/engram')
+    } else {
+      logger.dim('Fix: brew install gentleman-programming/tap/engram')
+    }
     logger.dim('     or see: https://github.com/Gentleman-Programming/engram')
   } else {
     const version = getEngramVersion()
