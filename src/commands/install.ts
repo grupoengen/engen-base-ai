@@ -2,9 +2,6 @@ import path from 'path'
 import chalk from 'chalk'
 import { intro, outro, multiselect, isCancel, cancel } from '@clack/prompts'
 import { detectTools } from '../detector'
-import { apply as applyClaudeCode } from '../adapters/claude-code'
-import { apply as applyOpenCode } from '../adapters/opencode'
-import { apply as applyAntigravity } from '../adapters/antigravity'
 import { apply as applyKiro } from '../adapters/kiro'
 import { setup as setupOpenSpec } from '../utils/openspec'
 import { isInstalled as isGentleAiInstalled, installCli as installGentleAi, runInstall as runGentleAiInstall } from '../utils/gentle-ai'
@@ -16,7 +13,7 @@ import type { AITool } from '../detector'
 
 const ASSETS_DIR = path.join(__dirname, '..', 'src', 'assets')
 
-const VALID_TOOLS = ['claude', 'claude-code', 'opencode', 'kiro-ide', 'kiro-cli', 'kiro', 'codex', 'antigravity'] as const
+const VALID_TOOLS = ['kiro-ide', 'kiro-cli', 'kiro'] as const
 type ToolArg = typeof VALID_TOOLS[number]
 
 const INTERACTIVE_TOOLS: Array<{ value: AITool; label: string }> = [
@@ -26,14 +23,9 @@ const INTERACTIVE_TOOLS: Array<{ value: AITool; label: string }> = [
 
 function normalizeTool(tool: string): AITool | null {
   switch (tool.toLowerCase()) {
-    case 'claude':
-    case 'claude-code': return 'claude-code'
-    case 'opencode':    return 'opencode'
     case 'kiro':
     case 'kiro-ide':    return 'kiro-ide'
     case 'kiro-cli':    return 'kiro-cli'
-    case 'codex':       return 'codex'
-    case 'antigravity': return 'antigravity'
     default:            return null
   }
 }
@@ -98,14 +90,8 @@ export async function install(tool?: string, opts: { yes?: boolean } = {}): Prom
   await ensureGentleAiEcosystem(agentsForGentleAi)
   await setupOpenSpec()
 
-  if (shouldRun('claude-code'))
-    await safeApply('Claude Code', () => applyClaudeCode(ASSETS_DIR))
-  if (shouldRun('opencode'))
-    await safeApply('OpenCode', () => applyOpenCode(ASSETS_DIR))
   if (shouldRun('kiro-ide') || shouldRun('kiro-cli'))
     await safeApply('Kiro', () => applyKiro(ASSETS_DIR))
-  if (shouldRun('antigravity'))
-    await safeApply('Antigravity', () => applyAntigravity(ASSETS_DIR))
 
   await safeApply('Engram', () => setupEngram(agentsForGentleAi))
   await safeApply('Git hooks', () => installGlobalHooks(ASSETS_DIR))

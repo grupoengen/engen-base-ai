@@ -8,17 +8,14 @@ import type { AITool } from '../detector'
 
 // Agent IDs that engram setup recognizes
 const AGENT_IDS: Partial<Record<AITool, string>> = {
-  'claude-code': 'claude-code',
-  'opencode':    'opencode',
-  'kiro-ide':    'kiro',
-  'kiro-cli':    'kiro',
+  'kiro-ide': 'kiro',
+  'kiro-cli': 'kiro',
 }
 
 // Settings files where engram setup writes mcpServers.engram
 const SETTINGS_FILES: Partial<Record<AITool, string>> = {
-  'claude-code': path.join(os.homedir(), '.claude', 'settings.json'),
-  'kiro-ide':    path.join(os.homedir(), '.kiro', 'settings', 'mcp.json'),
-  'kiro-cli':    path.join(os.homedir(), '.kiro', 'settings', 'mcp.json'),
+  'kiro-ide': path.join(os.homedir(), '.kiro', 'settings', 'mcp.json'),
+  'kiro-cli': path.join(os.homedir(), '.kiro', 'settings', 'mcp.json'),
 }
 
 export type EngramMode = 'local' | 'cloud' | 'both' | 'none'

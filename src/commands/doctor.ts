@@ -1,16 +1,10 @@
-import fs from 'fs-extra'
-import path from 'path'
-import os from 'os'
 import chalk from 'chalk'
 import { detectTools } from '../detector'
 import { getState as getOpenSpecState } from '../utils/openspec'
 import { logger } from '../utils/logger'
-import { hasClaudeTeamBlock } from '../utils/checks'
 import { isInstalled as isEngramInstalled, getVersion as getEngramVersion, detectMode as detectEngramMode, isWiredForTool } from '../utils/engram'
 import { isInstalled as areHooksInstalled } from '../utils/git-hooks'
 import { isInstalled as isGentleAiInstalled } from '../utils/gentle-ai'
-
-const CLAUDE_DIR = path.join(os.homedir(), '.claude')
 
 interface Check {
   name: string
@@ -33,34 +27,18 @@ export async function doctor(): Promise<void> {
     fix: 'Install Node.js 18+ via nvm or https://nodejs.org',
   })
 
-  // AI tools
+  // Kiro detection
   checks.push({
-    name: 'At least one AI tool installed (claude / opencode / antigravity)',
+    name: 'Kiro IDE or Kiro CLI detected',
     pass: detected.tools.length > 0,
-    fix: 'Install Claude Code: https://claude.ai/code',
+    fix: 'Install Kiro from https://kiro.dev',
   })
 
-  if (detected.claudeCode) {
-    // CLAUDE.md team block
-    const hasTeamBlock = await hasClaudeTeamBlock()
-    checks.push({
-      name: 'Team standards block in CLAUDE.md',
-      pass: hasTeamBlock,
-      fix: 'Run: baseline install',
-    })
-
-    // Skills directory
-    const skillsDir = path.join(CLAUDE_DIR, 'skills')
-    checks.push({
-      name: 'Skills directory exists',
-      pass: await fs.pathExists(skillsDir),
-      fix: 'Run: baseline install',
-    })
-
+  if (detected.kiroIde || detected.kiroCli) {
     // Git hooks
     const hooksInstalled = areHooksInstalled()
     checks.push({
-      name: 'Git hooks installed (pre-push recommends pull requests)',
+      name: 'Git hooks installed',
       pass: hooksInstalled,
       fix: 'Run: baseline install',
       note: process.platform === 'win32' && hooksInstalled
@@ -120,14 +98,13 @@ export async function doctor(): Promise<void> {
       logger.dim('Tip: set ENGRAM_CLOUD_TOKEN to enable cloud sync across machines')
     }
 
-    // Check MCP wiring per detected tool
     for (const tool of detected.tools) {
       const wired = await isWiredForTool(tool)
       if (wired) {
         logger.success(`MCP wired for ${tool}`)
       } else {
         logger.warn(`MCP not wired for ${tool}`)
-        logger.dim(`Fix: Run: baseline install${tool !== 'claude-code' ? ` ${tool}` : ''}`)
+        logger.dim(`Fix: Run: baseline install ${tool}`)
       }
     }
   }
