@@ -4,7 +4,6 @@ import { update } from './commands/update'
 import { status } from './commands/status'
 import { doctor } from './commands/doctor'
 import { onboard } from './commands/onboard'
-import { mcp } from './commands/mcp'
 import { cloudLogin, cloudLogout, cloudStatus, cloudSync, cloudKiroScan } from './commands/cloud'
 import { logger } from './utils/logger'
 
@@ -77,19 +76,6 @@ program
   .action(async (level?: string) => {
     try {
       await onboard(level)
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err)
-      logger.error(message)
-      process.exit(1)
-    }
-  })
-
-program
-  .command('mcp <provider>')
-  .description('Configure an MCP server for your AI tools (e.g. baseline mcp jira)')
-  .action(async (provider: string) => {
-    try {
-      await mcp(provider)
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
       logger.error(message)

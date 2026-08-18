@@ -29,7 +29,7 @@ On Windows, `baseline install` works from CMD, PowerShell, Git Bash, WSL, or mac
 | Team standards block | `~/.claude/CLAUDE.md` · `~/.opencode/AGENTS.md` · `~/.kiro/steering/baseline.md` |
 | [Gentle-AI](https://github.com/Gentleman-Programming/gentle-ai) ecosystem | global |
 | [Engram](https://github.com/Gentleman-Programming/engram) MCP wiring (if installed) | per AI tool via `engram setup` |
-| Git hooks (pre-push recommends PRs and traceable branches) | `~/.baseline/hooks/` via `core.hooksPath` |
+| Git hooks (global pre-push, advisory-only) | `~/.baseline/hooks/` via `core.hooksPath` |
 | OpenSpec structure for spec-driven development | `./openspec/` in the project |
 | Corporate skills from baseline-cloud (when configured) | `~/.kiro/steering/bl-*.md` — synced automatically |
 | Background watcher for Kiro credit tracking | launchd (macOS) / cron (Linux) — installed automatically |
@@ -46,7 +46,6 @@ baseline update                   # pull latest baseline and re-apply standards
 baseline status                   # show what's installed and configured
 baseline doctor                   # diagnose missing or broken setup — includes Engram check
 baseline onboard junior           # onboarding guide by level: junior · semi · senior
-baseline mcp jira                 # configure Atlassian MCP (Jira) for all detected tools
 
 # baseline-cloud — connect to your team's self-hosted baseline-cloud server
 baseline cloud login              # authenticate (one-time setup)
@@ -123,7 +122,6 @@ Click the skill name to see a concrete usage example. Each example shows real pr
 
 | Skill | What it does | Example prompt |
 |-------|-------------|----------------|
-| [`/branch-pr`](example-sdd/08-git-jira-workflow.md#branch-pr--crear-el-pr-vinculado-al-trabajo) | Opens a PR linked to a Jira ticket or SDD change. Validates naming, commits, and tests before creating. | `/branch-pr` |
 | [`/chained-pr`](example-sdd/03-git-workflow.md#chained-pr--partir-un-pr-grande-en-cadena) | Splits oversized PRs (400+ lines) into a reviewable sequence. | `/chained-pr tengo 800 líneas de refactor en el módulo de usuarios` |
 | [`/work-unit-commits`](example-sdd/03-git-workflow.md#work-unit-commits--planear-commits-como-unidades-revieweables) | Plans commits as self-contained reviewable units before pushing. | `/work-unit-commits implementé notificaciones, auth y la integración` |
 
@@ -154,18 +152,12 @@ Click the skill name to see a concrete usage example. Each example shows real pr
 |-------|-------------|----------------|
 | [`/issue-creation`](example-sdd/05-docs-testing-github.md#issue-creation--github-issues-con-contexto-completo) | Creates GitHub issues with full context: steps to reproduce, impact, expected behavior. | `/issue-creation el checkout falla en Safari cuando hay 2+ items` |
 
-### Jira
-
-| Skill | What it does | Example prompt |
-|-------|-------------|----------------|
-| [`/jira-workflow`](example-sdd/08-git-jira-workflow.md#jira-workflow--gestionar-tickets-desde-el-ai-tool) | Creates and updates Jira tickets linked to SDD changes. Post-commit hook adds comments automatically. Requires `baseline mcp jira`. | `/jira-workflow crea un ticket para agregar soporte de webhooks en pagos` |
-
 ### Skills meta
 
 | Skill | What it does | Example prompt |
 |-------|-------------|----------------|
 | `/skill-creator` | Creates new LLM-first skills with valid SKILL.md frontmatter. | `/skill-creator quiero una skill para nuestro proceso de deploy` |
-| `/skill-improver` | Audits and refactors existing SKILL.md files: normalize conventions, improve quality. | `/skill-improver revisa la skill de branch-pr` |
+| `/skill-improver` | Audits and refactors existing SKILL.md files: normalize conventions, improve quality. | `/skill-improver revisa la skill de chained-pr` |
 | `/skill-registry` | Rebuilds the skill index after adding or changing skills. | `/skill-registry` |
 
 ---

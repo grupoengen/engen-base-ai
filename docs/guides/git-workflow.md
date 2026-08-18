@@ -1,236 +1,73 @@
-# Git Workflow — Step-by-step guide
+# Git Workflow
 
-All changes should preferably go through a pull request. Direct pushes to `main`,
-`master`, `qa`, or `develop` are allowed by the local hook, and branch names may be
-used without a **Jira ticket** or an **SDD change**.
-
-Two hooks installed by `baseline install` support this workflow:
-
-| Hook | What it does |
-|------|-------------|
-| `pre-push` | Recommends pull requests for protected branches and traceable branch names; never blocks pushes |
-| `post-commit` | After every commit, posts a comment to the linked Jira ticket (silent if no ticket or credentials) |
+`baseline install` installs a global `pre-push` git hook. It is advisory-only and never blocks a push.
 
 ---
 
-## Protected branches
+## Branch naming
 
-| Branch | Recommended practice |
-|--------|------|
-| `main` | Production — preferably use a PR after full review |
-| `master` | Same as `main` |
-| `qa` | Staging — preferably use PRs from feature branches that passed CI |
-| `develop` | Integration — preferably use PRs from feature branches |
-
----
-
-## Branch naming decision tree
-
-```
-¿Tienes un ticket de Jira para este trabajo?
-│
-├── SÍ → feat/PROJ-123-short-description
-│         fix/PROJ-456-null-pointer
-│         refactor/PROJ-789-auth-layer
-│
-└── NO → ¿Tienes un SDD change id?
-         │
-         ├── SÍ → feat/sdd-<change-id>-short-description
-         │         fix/sdd-<change-id>-bug-description
-         │
-         └── NO → Crea el SDD primero:
-                   /sdd-new <descripción de lo que vas a hacer>
-                   Luego usa el change-id generado.
-```
-
-**El hook `pre-push` recomienda estos formatos, pero no bloquea ramas que no los cumplan.**
-
----
-
-## Path A — Con ticket de Jira
-
-### 1. Obtener o crear el ticket
-
-```
-/jira-workflow busca el ticket de webhooks en el módulo de pagos
-```
-
-```
-/jira-workflow crea un ticket para agregar soporte de webhooks
-```
-
-Anota el key del ticket (p. ej. `PROJ-123`).
-
-### 2. Crear la rama
+Use meaningful, traceable branch names. When working with SDD, reference the change ID:
 
 ```bash
-git checkout develop && git pull origin develop
-git checkout -b feat/PROJ-123-webhooks-pagos
+feat/sdd-<change-id>-short-description
+fix/sdd-<change-id>-bug-description
 ```
 
-### 3. Trabajar y commitear
+For general work without an SDD change:
 
 ```bash
-git add <archivos>
-git commit -m "feat(pagos): add webhook receiver endpoint"
-```
-
-**Al hacer el `git commit`, el hook `post-commit` agrega automáticamente un comentario
-en el ticket `PROJ-123`:**
-
-```
-[baseline] Commit on `feat/PROJ-123-webhooks-pagos`
-
-*a3f9c1b* — feat(pagos): add webhook receiver endpoint
-Author: Ana García
-Files: src/pagos/controllers/webhook.controller.ts, src/pagos/services/webhook.service.ts
-```
-
-Esto ocurre en silencio — si las credenciales no están configuradas o el ticket no existe,
-el commit continúa sin error.
-
-### 4. Push y PR
-
-```bash
-git push -u origin feat/PROJ-123-webhooks-pagos
-/branch-pr
+feat/short-description
+fix/short-description
+refactor/short-description
 ```
 
 ---
 
-## Path B — Sin Jira, con SDD
+## Working with SDD
 
-### 1. Crear el SDD change
-
-```
-/sdd-new quiero agregar soporte de webhooks en el módulo de pagos
-```
-
-Esto genera `openspec/changes/<id>/proposal.md`. El `<id>` es lo que va en la rama.
-
-### 2. Crear la rama con el SDD id
-
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feat/sdd-20240718-webhooks-pagos
-```
-
-Donde `20240718` es el `<id>` del change generado por `/sdd-new`.
-
-### 3. Seguir el flujo SDD completo
+Start any change with:
 
 ```
-/sdd-spec    → especificación
-/sdd-design  → diseño técnico
-/sdd-tasks   → lista de tareas
-/sdd-apply   → implementación
-/sdd-verify  → validación
+/sdd-new <description of what you're building>
 ```
 
-Los commits son trazables al SDD change a través del nombre de la rama.
+Then follow the cycle:
 
-### 4. Push y PR
-
-```bash
-git push -u origin feat/sdd-20240718-webhooks-pagos
-/branch-pr
+```
+/sdd-spec    → requirements
+/sdd-design  → technical design
+/sdd-tasks   → task checklist
+/sdd-apply   → implementation
+/sdd-verify  → validation
+/sdd-archive → close the change
 ```
 
 ---
 
-## Commits — convención obligatoria
+## Commits — required convention
 
 ```
 type(scope): short description
 ```
 
-| Tipo | Cuándo |
-|------|--------|
-| `feat` | Funcionalidad nueva |
-| `fix` | Corrección de bug |
-| `refactor` | Reestructura sin cambio de comportamiento |
-| `test` | Agregar o corregir tests |
+| Type | When |
+|------|------|
+| `feat` | New functionality |
+| `fix` | Bug fix |
+| `refactor` | Restructure without behavior change |
+| `test` | Add or fix tests |
 | `chore` | Deps, config, tooling |
-| `docs` | Solo documentación |
-| `perf` | Mejora de rendimiento |
-
-**Regla:** no se hace commit de código que modifica comportamiento sin tests que lo cubran.
+| `docs` | Documentation only |
+| `perf` | Performance improvement |
 
 ---
 
-## El PR
+## Skills reference
 
-```
-/branch-pr
-```
-
-El skill valida y abre el PR con:
-- Título: `feat(pagos): add webhook receiver endpoint [PROJ-123]` o `feat(pagos): add webhook receiver endpoint [sdd-20240718]`
-- Link al ticket Jira o al SDD change
-- Summary y test plan
-- El flujo recomendado es mediante PR; el push directo sigue estando permitido
-
----
-
-## Review y merge
-
-- Al menos un aprobador
-- CI verde (tests, lint, build)
-- Sin comentarios sin resolver
-
-Para PRs de auth, pagos o multi-tenancy:
-
-```
-/judgment-day revisa este PR:
-[pega el diff]
-```
-
----
-
-## Cierre
-
-Después del merge:
-
-```bash
-# Limpiar la rama
-git checkout develop && git pull
-git branch -d feat/PROJ-123-webhooks-pagos
-
-# Actualizar el ticket (Path A)
-/jira-workflow mueve PROJ-123 a Done
-
-# Archivar el SDD change (Path B)
-/sdd-archive
-```
-
----
-
-## Quick reference
-
-```bash
-# Path A — con Jira
-git checkout -b feat/PROJ-123-description
-git commit -m "feat(scope): what you did"   # → auto-comment en PROJ-123
-git push -u origin feat/PROJ-123-description
-# /branch-pr
-
-# Path B — sin Jira
-# /sdd-new <descripción>   → genera change-id
-git checkout -b feat/sdd-<change-id>-description
-git commit -m "feat(scope): what you did"
-git push -u origin feat/sdd-<change-id>-description
-# /branch-pr
-```
-
----
-
-## Skills del workflow
-
-| Skill | Cuándo usarlo |
-|-------|--------------|
-| `/jira-workflow` | Crear/buscar ticket antes de empezar (Path A) |
-| `/sdd-new` | Iniciar el SDD change cuando no hay Jira (Path B) |
-| `/work-unit-commits` | Planear commits antes de pushear un cambio grande |
-| `/branch-pr` | Abrir el PR con todos los checks requeridos |
-| `/judgment-day` | Revisión adversarial para auth, pagos o PRs grandes |
-| `/sdd-archive` | Cerrar el SDD change después del merge (Path B) |
+| Skill | When to use |
+|-------|-------------|
+| `/sdd-new` | Start any new change |
+| `/work-unit-commits` | Plan commits before pushing a large change |
+| `/chained-pr` | Split a large PR into a reviewable sequence |
+| `/judgment-day` | Adversarial review for auth, payments, or large PRs |
+| `/sdd-archive` | Close the SDD change after merge |
