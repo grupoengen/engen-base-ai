@@ -23,6 +23,7 @@
     "docs"
   ],
   "dependencies": {
+    "@clack/prompts": "^1.7.0",
     "chalk": "4.1.2",
     "commander": "^12.1.0",
     "fs-extra": "^11.2.0"

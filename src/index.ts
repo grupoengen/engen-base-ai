@@ -20,10 +20,11 @@ program
 
 program
   .command('install [tool]')
-  .description('Install team standards, skills and AI config (optionally for a specific tool: claude, opencode, kiro, antigravity)')
-  .action(async (tool?: string) => {
+  .description('Install team standards, skills and AI config (optionally for a specific tool: kiro-ide, kiro-cli)')
+  .option('-y, --yes', 'Skip interactive prompts and configure all detected tools')
+  .action(async (tool: string | undefined, opts: { yes?: boolean }) => {
     try {
-      await install(tool)
+      await install(tool, opts)
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
       logger.error(message)

@@ -1,5 +1,4 @@
-import { createInterface } from 'node:readline/promises'
-import { stdin, stdout, exit } from 'node:process'
+import { intro, outro, text, password, isCancel, cancel } from '@clack/prompts'
 import { saveConfig, tokenPrefix, loadConfig, clearConfig } from './auth'
 
 function validServerUrl(value: string): boolean {
@@ -23,31 +22,42 @@ export async function login(opts: LoginOpts = {}): Promise<void> {
     return
   }
 
-  const rl = createInterface({ input: stdin, output: stdout })
-  try {
-    const defUrl = opts.serverUrl ?? process.env.BASELINE_CLOUD_URL ?? ''
-    const promptUrl = defUrl ? `Server URL [${defUrl}]: ` : 'Server URL: '
-    const rawUrl = (await rl.question(promptUrl)).trim() || defUrl
-    const serverUrl = rawUrl.replace(/\/+$/, '')
+  intro('baseline-cloud — login')
 
-    if (!serverUrl || !validServerUrl(serverUrl)) {
-      console.error('✗ Invalid server URL')
-      exit(1)
-    }
+  const defUrl = opts.serverUrl ?? process.env.BASELINE_CLOUD_URL ?? ''
 
-    const token = (await rl.question('API token: ')).trim()
-    if (!token) {
-      console.error('✗ Token is required')
-      exit(1)
-    }
+  const serverUrl = await text({
+    message: 'Server URL',
+    placeholder: 'https://your-baseline-cloud.com',
+    initialValue: defUrl,
+    validate: (value) => {
+      const url = (value || '').replace(/\/+$/, '')
+      if (!url) return 'Server URL is required'
+      if (!validServerUrl(url)) return 'Must be a valid http(s) URL'
+    },
+  })
 
-    saveConfig({ server_url: serverUrl, token })
-    console.log(`✓ Config saved to ~/.baseline/cloud.json`)
-    console.log(`  Server: ${serverUrl}`)
-    console.log(`  Token prefix: ${tokenPrefix(token)}`)
-  } finally {
-    rl.close()
+  if (isCancel(serverUrl)) {
+    cancel('Login cancelled.')
+    process.exit(0)
   }
+
+  const token = await password({
+    message: 'API token',
+    validate: (value) => {
+      if (!value) return 'Token is required'
+    },
+  })
+
+  if (isCancel(token)) {
+    cancel('Login cancelled.')
+    process.exit(0)
+  }
+
+  const cleanUrl = (serverUrl as string).replace(/\/+$/, '')
+  saveConfig({ server_url: cleanUrl, token: token as string })
+
+  outro(`Connected to ${cleanUrl}  (token: ${tokenPrefix(token as string)})`)
 }
 
 export async function logout(): Promise<void> {
