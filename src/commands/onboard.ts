@@ -1,6 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 import chalk from 'chalk'
+import { intro, select, isCancel, cancel } from '@clack/prompts'
 import { logger } from '../utils/logger'
 
 type Level = 'junior' | 'semi' | 'senior'
@@ -14,14 +15,24 @@ const LEVELS: Record<Level, { label: string; file: string }> = {
 }
 
 export async function onboard(level?: string): Promise<void> {
+  intro('baseline — onboarding')
+
   if (!level) {
-    console.log(chalk.bold.magenta('\n  baseline — onboarding\n'))
-    logger.info('Choose your level:')
-    logger.dim('baseline onboard junior')
-    logger.dim('baseline onboard semi')
-    logger.dim('baseline onboard senior')
-    console.log()
-    return
+    const selected = await select({
+      message: 'Select your experience level',
+      options: [
+        { value: 'junior', label: 'Junior', hint: '4-week path' },
+        { value: 'semi', label: 'Semi-senior', hint: '1-week path' },
+        { value: 'senior', label: 'Senior / Lead', hint: '2-day path' },
+      ],
+    })
+
+    if (isCancel(selected)) {
+      cancel('Onboarding cancelled.')
+      process.exit(0)
+    }
+
+    level = selected as string
   }
 
   if (!Object.keys(LEVELS).includes(level)) {

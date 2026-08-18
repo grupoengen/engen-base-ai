@@ -2,16 +2,16 @@
 
 > One command to give your entire team the same AI tools, skills, and working rules — so anyone can pick up where someone else left off.
 
-[![npm](https://img.shields.io/npm/v/@baseline-ia/baseline-cli)](https://www.npmjs.com/package/@baseline-ia/baseline-cli)
-[![node](https://img.shields.io/node/v/@baseline-ia/baseline-cli)](https://nodejs.org)
-[![license](https://img.shields.io/npm/l/@baseline-ia/baseline-cli)](./LICENSE)
+[![npm](https://img.shields.io/npm/v/@grupoengen/engen-base-ai)](https://www.npmjs.com/package/@grupoengen/engen-base-ai)
+[![node](https://img.shields.io/node/v/@grupoengen/engen-base-ai)](https://nodejs.org)
+[![license](https://img.shields.io/npm/l/@grupoengen/engen-base-ai)](./LICENSE)
 
 ---
 
 ## Quick start
 
 ```bash
-npm install -g @baseline-ia/baseline-cli
+npm install -g @grupoengen/engen-base-ai
 baseline install
 ```
 
@@ -29,8 +29,10 @@ On Windows, `baseline install` works from CMD, PowerShell, Git Bash, WSL, or mac
 | Team standards block | `~/.claude/CLAUDE.md` · `~/.opencode/AGENTS.md` · `~/.kiro/steering/baseline.md` |
 | [Gentle-AI](https://github.com/Gentleman-Programming/gentle-ai) ecosystem | global |
 | [Engram](https://github.com/Gentleman-Programming/engram) MCP wiring (if installed) | per AI tool via `engram setup` |
-| Git hooks (pre-push recommends PRs and traceable branches) | `~/.baseline/hooks/` via `core.hooksPath` |
+| Git hooks (global pre-push, advisory-only) | `~/.baseline/hooks/` via `core.hooksPath` |
 | OpenSpec structure for spec-driven development | `./openspec/` in the project |
+| Corporate skills from baseline-cloud (when configured) | `~/.kiro/steering/bl-*.md` — synced automatically |
+| Background watcher for Kiro credit tracking | launchd (macOS) / cron (Linux) — installed automatically |
 
 ---
 
@@ -38,16 +40,19 @@ On Windows, `baseline install` works from CMD, PowerShell, Git Bash, WSL, or mac
 
 ```bash
 baseline install                  # auto-detect tools and configure all
-baseline install claude           # configure only Claude Code
-baseline install opencode         # configure only OpenCode
 baseline install kiro-ide         # configure only Kiro IDE (~/.kiro detected)
 baseline install kiro-cli         # configure only Kiro CLI (kiro binary detected)
-baseline install codex            # configure only Codex
 baseline update                   # pull latest baseline and re-apply standards
 baseline status                   # show what's installed and configured
 baseline doctor                   # diagnose missing or broken setup — includes Engram check
 baseline onboard junior           # onboarding guide by level: junior · semi · senior
-baseline mcp jira                 # configure Atlassian MCP (Jira) for all detected tools
+
+# baseline-cloud — connect to your team's self-hosted baseline-cloud server
+baseline cloud login              # authenticate (one-time setup)
+baseline cloud status             # show connection status and configured server
+baseline cloud sync               # download latest corporate skills to ~/.kiro/steering/
+baseline cloud logout             # remove saved credentials
+baseline cloud kiro-scan          # manually report Kiro session credit usage
 ```
 
 ---
@@ -72,20 +77,16 @@ Skills are installed for every step. Start any change with:
 
 | Tool | Skills | Team config | Gentle-AI preset |
 |------|--------|-------------|-----------------|
-| [Claude Code](https://claude.ai/code) | ✅ | ✅ `~/.claude/CLAUDE.md` (strict TDD) | `full-gentleman` + SDD multi |
-| [OpenCode](https://opencode.ai) | ✅ | ✅ `~/.opencode/AGENTS.md` (strict TDD) | `full-gentleman` + SDD multi |
 | [Kiro IDE](https://kiro.dev) (`~/.kiro` detected) | ✅ | ✅ `~/.kiro/steering/baseline.md` (strict TDD) + statusline sub-agent | `performance` + SDD multi |
 | [Kiro CLI](https://kiro.dev) (`kiro` binary detected) | ✅ | ✅ same as Kiro IDE (strict TDD) | `performance` + SDD multi |
-| Codex | — | via gentle-ai | `recommended` |
-| Antigravity | — | coming soon | — |
 
-Detection is automatic — `baseline install` reads your environment and configures only the tools that are present. All tools use `--persona neutral`.
+Detection is automatic — `baseline install` reads your environment and configures only the tools that are present.
 
 ---
 
 ## Skills reference
 
-27 skills are installed across all supported tools. Each skill is invoked with `/skill-name` inside your AI tool.
+25 skills are installed across all supported tools. Each skill is invoked with `/skill-name` inside your AI tool.
 Click the skill name to see a concrete usage example. Each example shows real prompts and output — not limits on what the skill can do.
 
 ### Architecture
@@ -121,7 +122,6 @@ Click the skill name to see a concrete usage example. Each example shows real pr
 
 | Skill | What it does | Example prompt |
 |-------|-------------|----------------|
-| [`/branch-pr`](example-sdd/08-git-jira-workflow.md#branch-pr--crear-el-pr-vinculado-al-trabajo) | Opens a PR linked to a Jira ticket or SDD change. Validates naming, commits, and tests before creating. | `/branch-pr` |
 | [`/chained-pr`](example-sdd/03-git-workflow.md#chained-pr--partir-un-pr-grande-en-cadena) | Splits oversized PRs (400+ lines) into a reviewable sequence. | `/chained-pr tengo 800 líneas de refactor en el módulo de usuarios` |
 | [`/work-unit-commits`](example-sdd/03-git-workflow.md#work-unit-commits--planear-commits-como-unidades-revieweables) | Plans commits as self-contained reviewable units before pushing. | `/work-unit-commits implementé notificaciones, auth y la integración` |
 
@@ -152,55 +152,56 @@ Click the skill name to see a concrete usage example. Each example shows real pr
 |-------|-------------|----------------|
 | [`/issue-creation`](example-sdd/05-docs-testing-github.md#issue-creation--github-issues-con-contexto-completo) | Creates GitHub issues with full context: steps to reproduce, impact, expected behavior. | `/issue-creation el checkout falla en Safari cuando hay 2+ items` |
 
-### Jira
-
-| Skill | What it does | Example prompt |
-|-------|-------------|----------------|
-| [`/jira-workflow`](example-sdd/08-git-jira-workflow.md#jira-workflow--gestionar-tickets-desde-el-ai-tool) | Creates and updates Jira tickets linked to SDD changes. Post-commit hook adds comments automatically. Requires `baseline mcp jira`. | `/jira-workflow crea un ticket para agregar soporte de webhooks en pagos` |
-
 ### Skills meta
 
 | Skill | What it does | Example prompt |
 |-------|-------------|----------------|
 | `/skill-creator` | Creates new LLM-first skills with valid SKILL.md frontmatter. | `/skill-creator quiero una skill para nuestro proceso de deploy` |
-| `/skill-improver` | Audits and refactors existing SKILL.md files: normalize conventions, improve quality. | `/skill-improver revisa la skill de branch-pr` |
+| `/skill-improver` | Audits and refactors existing SKILL.md files: normalize conventions, improve quality. | `/skill-improver revisa la skill de chained-pr` |
 | `/skill-registry` | Rebuilds the skill index after adding or changing skills. | `/skill-registry` |
 
 ---
 
 ## Integrations
 
-### Jira (via Atlassian MCP)
+### Git workflow
 
-Connect your AI tools to Jira so the `/jira-workflow` skill can create and update tickets directly.
-Supported tools: **Claude Code**, **Kiro IDE**, **Kiro CLI**.
+`baseline install` installs a global `pre-push` git hook. It is advisory-only and never blocks a push.
 
-**Quick setup:**
+Re-run `baseline install` after updating baseline to refresh the hook.
+
+**Guide:**
+→ [`docs/guides/git-workflow.md`](docs/guides/git-workflow.md)
+
+### baseline-cloud (corporate skills and Kiro credit tracking)
+
+baseline-cloud is built into the CLI — no separate install needed. If your team runs a self-hosted baseline-cloud server, connect once and everything syncs automatically.
+
+**One-time setup:**
 
 ```bash
-export ATLASSIAN_SITE_URL=https://your-org.atlassian.net
-export ATLASSIAN_USER_EMAIL=your@email.com
-export ATLASSIAN_API_TOKEN=your-api-token
-baseline mcp jira          # auto-detects your tools and configures all of them
-# restart your AI tool, then:
-/jira-workflow crea los tickets para la migración del módulo de pagos
+baseline cloud login --server https://your-baseline-cloud.com --token <your-token>
+baseline cloud status             # confirm connection
+baseline cloud sync               # pull corporate skills immediately
 ```
 
-**Full step-by-step guide (token generation, per-tool config, troubleshooting, Jira project setup):**
-→ [`docs/guides/jira-integration.md`](docs/guides/jira-integration.md)
+**What happens automatically after login:**
 
-### Git workflow (branches, PRs, Jira linking)
+- `baseline install` syncs corporate skills from baseline-cloud to `~/.kiro/steering/bl-*.md`
+- Kiro IDE runs `baseline cloud sync` at the start of every session (via steering file)
+- A background watcher (launchd on macOS, cron on Linux) scans `~/.kiro/sessions/` every 5 minutes and reports credit usage to baseline-cloud
 
-Branches are recommended to reference a Jira ticket (`feat/PROJ-123-description`) or an SDD change (`feat/sdd-<id>-description`). `baseline install` installs two global git hooks:
+**All baseline-cloud commands:**
 
-- **`pre-push`** — recommends pull requests for `main`, `master`, `qa`, and `develop`, and recommends a work item reference; it never blocks a push
-- **`post-commit`** — automatically posts a comment to the linked Jira ticket after every commit
+| Command | Description |
+|---------|-------------|
+| `baseline cloud login --server <url> --token <token>` | Authenticate with your baseline-cloud server. Credentials saved to `~/.baseline/cloud.json`. |
+| `baseline cloud status` | Show configured server URL and token prefix. |
+| `baseline cloud sync` | Download all corporate skills to `~/.kiro/steering/bl-*.md`. Removes stale skills automatically. |
+| `baseline cloud logout` | Remove saved credentials. |
+| `baseline cloud kiro-scan` | Manually scan `~/.kiro/sessions/` and report credit usage to baseline-cloud. |
 
-Re-run `baseline install` after updating baseline to refresh the installed global hooks.
-
-**Guides:**
-→ [`docs/guides/git-workflow.md`](docs/guides/git-workflow.md) — full step-by-step with both paths
-→ [`example-sdd/08-git-jira-workflow.md`](example-sdd/08-git-jira-workflow.md) — concrete examples (not limits)
+**Full guide:** → [`docs/guides/baseline-cloud.md`](docs/guides/baseline-cloud.md)
 
 ---
 

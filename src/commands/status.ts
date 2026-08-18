@@ -5,9 +5,8 @@ import chalk from 'chalk'
 import { detectTools } from '../detector'
 import { getState as getOpenSpecState } from '../utils/openspec'
 import { logger } from '../utils/logger'
-import { hasClaudeTeamBlock } from '../utils/checks'
 
-const CLAUDE_DIR = path.join(os.homedir(), '.claude')
+const KIRO_DIR = path.join(os.homedir(), '.kiro')
 
 export async function status(): Promise<void> {
   console.log(chalk.bold.magenta('\n  baseline — status\n'))
@@ -16,30 +15,22 @@ export async function status(): Promise<void> {
 
   logger.title('AI Tools')
   const allTools = [
-    { name: 'claude-code', detected: detected.claudeCode },
-    { name: 'opencode', detected: detected.opencode },
-    { name: 'antigravity', detected: detected.antigravity },
+    { name: 'kiro-ide', detected: detected.kiroIde },
+    { name: 'kiro-cli', detected: detected.kiroCli },
   ]
   for (const tool of allTools) {
     if (tool.detected) logger.success(tool.name)
     else logger.dim(`${tool.name} — not installed`)
   }
 
-  if (detected.claudeCode) {
-    logger.title('Claude Code Skills')
-    const skillsDir = path.join(CLAUDE_DIR, 'skills')
+  if (detected.kiroIde) {
+    logger.title('Kiro Skills')
+    const skillsDir = path.join(KIRO_DIR, 'skills')
     if (await fs.pathExists(skillsDir)) {
       const skills = await fs.readdir(skillsDir)
       for (const skill of skills) logger.success(skill)
     } else {
       logger.warn('No skills directory found — run baseline install')
-    }
-
-    logger.title('CLAUDE.md')
-    if (await hasClaudeTeamBlock()) {
-      logger.success('Team standards block present')
-    } else {
-      logger.warn('Team standards block missing — run baseline install')
     }
   }
 

@@ -14,11 +14,8 @@ const PERSONA = 'neutral'
 // Codex is excluded: gentle-ai injects engram into Codex which requires >=0.144.0
 // and fails when the binary is missing or outdated.
 const AGENT_CONFIG: Record<string, { agentId: string; preset: string; sddMode?: string }> = {
-  'claude-code':  { agentId: 'claude-code', preset: 'full-gentleman', sddMode: 'multi' },
-  'opencode':     { agentId: 'opencode',    preset: 'full-gentleman', sddMode: 'multi' },
-  'kiro-ide':     { agentId: 'kiro-ide',    preset: 'performance',    sddMode: 'multi' },
-  'kiro-cli':     { agentId: 'kiro-ide',    preset: 'performance',    sddMode: 'multi' },
-  'antigravity':  { agentId: 'antigravity', preset: 'full-gentleman' },
+  'kiro-ide': { agentId: 'kiro-ide', preset: 'performance', sddMode: 'multi' },
+  'kiro-cli': { agentId: 'kiro-ide', preset: 'performance', sddMode: 'multi' },
 }
 
 export function isInstalled(): boolean {
