@@ -13,13 +13,19 @@ Load this skill when the user asks to resolve merge conflicts, analyze conflicti
 
 ## Model Selection
 
-Before starting, identify the most capable reasoning model available in the current session:
+Before starting, select the most capable reasoning model available. Use this exact priority order for Kiro:
 
-1. Check available models (Claude Opus > Claude Sonnet with extended thinking > Claude Sonnet > other).
-2. If the platform supports model switching and a reasoning/thinking model is available, announce it and switch:
-   > "Switching to [model] for deeper conflict analysis."
-3. If extended thinking is supported but model switching is not, enable maximum reasoning depth for the analysis phase.
-4. If no reasoning upgrade is available, proceed with chain-of-thought analysis (reason step by step explicitly before producing output).
+| Priority | Model | Use when |
+|----------|-------|----------|
+| 1 | **Claude Opus 5** or **GPT 5.6 Sol** | Top tier — deepest reasoning, prefer whichever is available |
+| 2 | Claude Opus 4.8 / 4.7 / 4.6 / 4.5 | No top-tier model available |
+| 3 | Claude Sonnet 5 | No Opus variant available |
+| ❌ | Auto, GPT 5.6 Terra/Luna, Haiku, DeepSeek, MiniMax, GLM, Qwen | Never — insufficient reasoning depth |
+
+If the platform supports model switching, announce the selected model and switch:
+> "Switching to [model] for deeper conflict analysis."
+
+If model switching is not available, enable maximum reasoning depth (extended thinking if supported), or proceed with explicit chain-of-thought analysis — reason step by step before producing output.
 
 ## Hard Rules
 
