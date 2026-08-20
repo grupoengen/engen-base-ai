@@ -6,6 +6,8 @@ import { join } from 'node:path'
 import { track, flush } from './events'
 import { resolveProjectIdentity } from './identity'
 import { loadConfig } from './auth'
+import { syncSkills } from './skills-sync'
+import { syncRepoPolicyForWorkspace } from './repo-policy'
 
 // State file path uses package name so it doesn't clash with baseline-cloud-client state
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -251,6 +253,39 @@ async function scanCli(state: ScanState, dryRun: boolean): Promise<{ sessions: n
   return { sessions: newSessions, credits: totalCredits }
 }
 
+async function syncWorkspacePolicies(): Promise<void> {
+  if (!existsSync(KIRO_SESSIONS_DIR)) return
+
+  const pairs = new Map<string, string>() // projectSlug -> workspaceDir
+
+  const workspaceIds = readdirSync(KIRO_SESSIONS_DIR).filter(
+    (f) => f !== 'cli' && statSync(join(KIRO_SESSIONS_DIR, f)).isDirectory(),
+  )
+
+  for (const wsId of workspaceIds) {
+    const wsDir = join(KIRO_SESSIONS_DIR, wsId)
+    const sessionIds = readdirSync(wsDir).filter((f) => statSync(join(wsDir, f)).isDirectory())
+    for (const sessId of sessionIds) {
+      const meta = readIdeMeta(join(wsDir, sessId))
+      if (meta?.workspaceDir && existsSync(meta.workspaceDir)) {
+        const project = resolveProjectIdentity(meta.workspaceDir)
+        pairs.set(project, meta.workspaceDir)
+      }
+    }
+  }
+
+  if (pairs.size === 0) return
+
+  for (const [project, workspaceDir] of pairs) {
+    try {
+      const result = await syncSkills({ project })
+      if (!result.error) {
+        syncRepoPolicyForWorkspace(workspaceDir, result.cloudPolicy, project)
+      }
+    } catch { /* skip this workspace */ }
+  }
+}
+
 export async function kiroScan(opts: { dryRun?: boolean } = {}): Promise<void> {
   if (!loadConfig()) return // silent — no cloud configured
 
@@ -269,5 +304,9 @@ export async function kiroScan(opts: { dryRun?: boolean } = {}): Promise<void> {
   if (!dryRun && newSessions > 0) {
     await flush()
     saveScanState(state)
+  }
+
+  if (!dryRun) {
+    await syncWorkspacePolicies().catch(() => { /* non-critical */ })
   }
 }
