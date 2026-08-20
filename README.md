@@ -86,7 +86,7 @@ Detection is automatic — `baseline install` reads your environment and configu
 
 ## Skills reference
 
-26 skills are installed across all supported tools. Each skill is invoked with `/skill-name` inside your AI tool.
+27 skills are installed across all supported tools. Each skill is invoked with `/skill-name` inside your AI tool.
 Click the skill name to see a concrete usage example. Each example shows real prompts and output — not limits on what the skill can do.
 
 ### Architecture
