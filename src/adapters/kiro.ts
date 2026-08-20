@@ -110,24 +110,26 @@ At the beginning of every session, silently run:
 \`\`\`
 baseline cloud sync
 \`\`\`
-This pulls the latest corporate skills from baseline-cloud into \`~/.kiro/steering/bl-*.md\`.
+This pulls the latest baseline skills from baseline-cloud into \`~/.kiro/skills/\` and updates the repository policy in \`.kiro/steering/baseline-repo-policy.md\`.
 Do not announce this to the user — just run it as a background step.
 
-### Corporate skills (bl-*.md)
-Files prefixed with \`bl-\` in \`~/.kiro/steering/\` are organizational standards.
-They are automatically loaded by Kiro. Do not modify or delete them manually.
-They update automatically each session.
+### Baseline skills (~/.kiro/skills/)
+Skills in \`~/.kiro/skills/\` are the authoritative version when connected to baseline-cloud.
+The cloud version overwrites the locally installed version on each sync.
+Do not modify them manually — run \`baseline cloud sync\` to refresh.
 
 ### Available commands
 - \`baseline cloud login --server <url> --token <token>\` — connect to baseline-cloud
-- \`baseline cloud sync\` — download latest corporate skills
+- \`baseline cloud sync\` — download latest skills and repo policy
 - \`baseline cloud status\` — show connection status
 - \`baseline cloud kiro-scan\` — manually report session credit usage
+- \`baseline repo init\` — configure which skills are disabled for this repository
+- \`baseline repo sync\` — apply the cloud skill policy to this workspace
 
 ### When to use
-- User asks about organizational standards → check \`bl-*.md\` files in steering
 - Connection issues → run \`baseline cloud status\`
 - User asks to refresh skills → run \`baseline cloud sync\`
+- User asks about disabled skills → check \`.kiro/steering/baseline-repo-policy.md\`
 `
 
 async function applyCloudSteering(): Promise<void> {

@@ -5,6 +5,8 @@ import { status } from './commands/status'
 import { doctor } from './commands/doctor'
 import { onboard } from './commands/onboard'
 import { cloudLogin, cloudLogout, cloudStatus, cloudSync, cloudKiroScan } from './commands/cloud'
+import { repoInit, repoSync } from './commands/repo'
+import { skillsPush } from './commands/skills'
 import { logger } from './utils/logger'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -120,6 +122,32 @@ cloud
   .description('Scan Kiro sessions and report credit usage to baseline-cloud')
   .action(async () => {
     try { await cloudKiroScan() } catch (err) { logger.error(err instanceof Error ? err.message : String(err)); process.exit(1) }
+  })
+
+cloud
+  .command('skills-push')
+  .description('Push all bundled skills to baseline-cloud (admin token required)')
+  .action(async () => {
+    try { await skillsPush() } catch (err) { logger.error(err instanceof Error ? err.message : String(err)); process.exit(1) }
+  })
+
+// baseline repo — per-repository skill policy
+const repo = program.command('repo').description('Manage per-repository skill policy')
+
+repo
+  .command('init')
+  .description('Configure which skills are disabled for this repository')
+  .option('--cwd <path>', 'Project directory', process.cwd())
+  .action(async (opts: { cwd: string }) => {
+    try { await repoInit(opts.cwd) } catch (err) { logger.error(err instanceof Error ? err.message : String(err)); process.exit(1) }
+  })
+
+repo
+  .command('sync')
+  .description('Sync repository skill policy from baseline-cloud')
+  .option('--cwd <path>', 'Project directory', process.cwd())
+  .action(async (opts: { cwd: string }) => {
+    try { await repoSync(opts.cwd) } catch (err) { logger.error(err instanceof Error ? err.message : String(err)); process.exit(1) }
   })
 
 program.parse(process.argv)

@@ -53,6 +53,10 @@ baseline cloud status             # show connection status and configured server
 baseline cloud sync               # download latest corporate skills to ~/.kiro/steering/
 baseline cloud logout             # remove saved credentials
 baseline cloud kiro-scan          # manually report Kiro session credit usage
+
+# baseline repo — per-repository skill policy
+baseline repo init                # configure which skills are disabled for this repo
+baseline repo sync                # sync repo policy from baseline-cloud
 ```
 
 ---
@@ -124,6 +128,13 @@ Click the skill name to see a concrete usage example. Each example shows real pr
 |-------|-------------|----------------|
 | [`/chained-pr`](example-sdd/03-git-workflow.md#chained-pr--partir-un-pr-grande-en-cadena) | Splits oversized PRs (400+ lines) into a reviewable sequence. | `/chained-pr tengo 800 líneas de refactor en el módulo de usuarios` |
 | [`/work-unit-commits`](example-sdd/03-git-workflow.md#work-unit-commits--planear-commits-como-unidades-revieweables) | Plans commits as self-contained reviewable units before pushing. | `/work-unit-commits implementé notificaciones, auth y la integración` |
+
+### Security & conflicts
+
+| Skill | What it does | Example prompt |
+|-------|-------------|----------------|
+| `/sdd-security` | Audit code changes against OWASP Top 10 2021. Fits between `sdd-apply` and `sdd-verify` as a security gate. Uses Claude Opus 5 or GPT 5.6 Sol for maximum reasoning depth. | `/sdd-security` |
+| `/conflict-resolver` | Analyze and resolve git merge conflicts using deep reasoning. Classifies each conflict (AUTO / PREFER-OURS / PREFER-THEIRS / MERGE / AMBIGUOUS) and shows a diff preview before applying. | `/conflict-resolver` |
 
 ### Documentation
 
@@ -200,6 +211,25 @@ baseline cloud sync               # pull corporate skills immediately
 | `baseline cloud sync` | Download all corporate skills to `~/.kiro/steering/bl-*.md`. Removes stale skills automatically. |
 | `baseline cloud logout` | Remove saved credentials. |
 | `baseline cloud kiro-scan` | Manually scan `~/.kiro/sessions/` and report credit usage to baseline-cloud. |
+
+**Repository skill policy:**
+
+Admins can disable specific skills per project in the baseline-cloud dashboard (Admin → Projects → skill policy). The policy syncs automatically via `baseline cloud kiro-scan` and can be applied manually:
+
+```bash
+# Run once per repository to configure local overrides:
+baseline repo init
+
+# Apply the cloud policy to the current workspace immediately:
+baseline repo sync
+```
+
+Policy is stored in three layers, applied in order:
+1. **Cloud** (admin-managed, immutable per client) — `baseline-cloud` dashboard
+2. **Repo** (committed, shared with team) — `.baseline/config.json`
+3. **Local** (personal overrides, gitignored) — `.baseline/config.local.json`
+
+The merged result is written to `.kiro/steering/baseline-repo-policy.md` in the workspace, which Kiro reads automatically. Kiro enforces disabled skills without executing them.
 
 **Full guide:** → [`docs/guides/baseline-cloud.md`](docs/guides/baseline-cloud.md)
 
