@@ -17,6 +17,19 @@ Run when the user explicitly requests a security audit, OWASP scan, or vulnerabi
 
 Never run automatically — always require an explicit user trigger.
 
+## Model Selection
+
+Security auditing requires maximum reasoning depth. Use this exact priority order for Kiro:
+
+| Priority | Model | Use when |
+|----------|-------|----------|
+| 1 | **Claude Opus 5** or **GPT 5.6 Sol** | Top tier — deepest reasoning, 1M context for large codebases |
+| 2 | Claude Opus 4.8 / 4.7 / 4.6 / 4.5 | No top-tier model available |
+| 3 | Claude Sonnet 5 | No Opus variant available |
+| ❌ | Auto, GPT 5.6 Terra/Luna, Haiku, DeepSeek, MiniMax, GLM, Qwen | Never — security audit requires reliable, high-depth reasoning |
+
+Announce the model in the report header: `Model: [model name]`.
+
 ## Hard Rules
 
 - Audit only what changed in this SDD change (or the explicit scope). Do not audit the whole codebase unless the user asks.
